@@ -11,10 +11,10 @@ class API:
         }
 
         # Named Entity Recognition (NER) API
-        self.ner_url = "https://named-entity-extraction1.p.rapidapi.com/api/lingo"
+        self.ner_url = "https://namedentityrecognition.p.rapidapi.com/ner"
         self.ner_headers = {
             "x-rapidapi-key": "8813f81427msh110825a259e2b2dp1ac084jsnbea18cba81a8",
-            "x-rapidapi-host": "named-entity-extraction1.p.rapidapi.com",
+            "x-rapidapi-host": "namedentityrecognition.p.rapidapi.com",
             "Content-Type": "application/json"
         }
 
@@ -34,15 +34,12 @@ class API:
 
     # Named Entity Recognition (NER)
     def entity_extraction(self, text):
-        payload = {
-            "extractor": "en",
-            "text": text
-        }
+        payload = { "text": text }
         response = requests.post(self.ner_url, json=payload, headers=self.ner_headers)
         return response.json()
 
     # Emotion Analysis
-    def emotion_analysis(self, text):
+    def emotion_prediction(self, text):
         payload = {"text": text}
         response = requests.post(self.emotion_url, data=payload, headers=self.emotion_headers)
         return response.json()

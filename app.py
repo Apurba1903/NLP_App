@@ -5,7 +5,9 @@ from myapi import API
 
 class NLPApp:
 
-############################################################################################   
+############################################################################################  
+
+
     def __init__(self):
         
         # Database Object
@@ -61,7 +63,7 @@ class NLPApp:
         
         
         # Not Registered
-        label3 = Label(self.root, text='Not Registered?', bg='#e8f0fe', fg='black', bd=0, highlightthickness=1, highlightbackground='#ced4da', font=('verdana', 10, 'bold'), anchor='w')
+        label3 = Label(self.root, text='Not Registered?', bg='#283747', fg='white', justify='left', wraplength=400, font=('verdana', 10, 'bold'), anchor='w')
         label3.pack(pady=(150, 10))
         
         
@@ -113,7 +115,7 @@ class NLPApp:
         
         
         # Already Registered
-        label3 = Label(self.root, text='Already Registered?', bg='#e8f0fe', fg='black', bd=0, highlightthickness=1, highlightbackground='#ced4da', font=('verdana', 10, 'bold'), anchor='w')
+        label3 = Label(self.root, text='Already Registered?', bg='#283747', fg='white', justify='left', wraplength=400, font=('verdana', 10, 'bold'), anchor='w')
         label3.pack(pady=(100, 10))
         
         
@@ -184,19 +186,18 @@ class NLPApp:
         
         
         # NER Analysis
-        ner_btn = Button(self.root, text='Named Entity Recognition',bg='#e8f0fe', fg='black', bd=0, highlightthickness=1, highlightbackground='#ced4da', width=30, height=4 , font=('verdana', 10, 'bold'), command=self.sentiment_gui)
+        ner_btn = Button(self.root, text='Named Entity Recognition',bg='#e8f0fe', fg='black', bd=0, highlightthickness=1, highlightbackground='#ced4da', width=30, height=4 , font=('verdana', 10, 'bold'), command=self.ner_gui)
         ner_btn.pack(pady=(10, 10))
         
         
         # Emotion Analysis
-        emotion_btn = Button(self.root, text='Emotion Prediction',bg='#e8f0fe', fg='black', bd=0, highlightthickness=1, highlightbackground='#ced4da', width=30, height=4 , font=('verdana', 10, 'bold'), command=self.sentiment_gui)
+        emotion_btn = Button(self.root, text='Emotion Prediction',bg='#e8f0fe', fg='black', bd=0, highlightthickness=1, highlightbackground='#ced4da', width=30, height=4 , font=('verdana', 10, 'bold'), command=self.emotion_gui)
         emotion_btn.pack(pady=(10, 10))
 
 
         # Logout Button
         logout_btn = Button(self.root, text='Logout',bg='#e8f0fe', fg='black', bd=0, highlightthickness=1, highlightbackground='#ced4da', font=('verdana', 10, 'bold'), command=self.login_gui)
         logout_btn.pack(pady=(100, 10))
-
 
 
 ############################################################################################
@@ -244,7 +245,7 @@ class NLPApp:
         goback_btn = Button(self.root, text='Go Back',bg='#e8f0fe', fg='black', bd=0, highlightthickness=1, highlightbackground='#ced4da', font=('verdana', 10, 'bold'), command=self.home_gui)
         goback_btn.pack(pady=(10, 10))
 
-    
+    # Sentiment Analysis API
     def do_sentiment_analysis(self):
         text = self.sentiment_input.get()
         result = self.apio.sentiment_analysis(text)
@@ -258,22 +259,129 @@ class NLPApp:
         # Displaying result
         self.sentiment_result['text'] = f"Sentiment: {sentiment}\n\nPositive Words:\n{', '.join(positive_words)}\nNegative Words:\n{', '.join(negative_words)}"
 
-############################################################################################
-
 
 ############################################################################################
 
 
+    # Named Entity Recognition GUI
+    def ner_gui(self):
+        self.clear()
+        
+        
+        # Heading
+        heading = Label(self.root, text='NLP App', bg='#283747', fg='white')
+        heading.pack(pady=(30, 30))
+        heading.configure( font=('verdana', 24, 'bold'))
+        
+        
+        # NER 
+        heading = Label(self.root, text='NER', bg='#283747', fg='white')
+        heading.pack(pady=(10, 20))
+        heading.configure( font=('verdana', 20, ))
+
+
+        # NER Text Label
+        label1 = Label(self.root, text='Enter The Text', bg='#e8f0fe', fg='black', bd=0, highlightthickness=1, highlightbackground='#ced4da', font=('verdana', 10, 'bold'), anchor='w')
+        label1.pack(fill='x', padx=60, pady=(10, 0),ipady=4, anchor='w')
+
+
+        # NER Text Input
+        self.ner_input = Entry(self.root, width=40, bg='#e8f0fe', fg='black', bd=0, highlightthickness=1, highlightbackground='#ced4da')
+        self.ner_input.pack(pady=(20, 10), ipady=4, padx=60, anchor='w', fill='x')
+        
+        
+        # NER Analysis Button
+        ner_btn = Button(self.root, text='Analyze NER',bg='#e8f0fe', fg='black', bd=0, highlightthickness=1, highlightbackground='#ced4da', font=('verdana', 10, 'bold'), command=self.do_ner)
+        ner_btn.pack(pady=(10, 10))
+        
+        
+        # Result Text Label
+        self.ner_result = Label(self.root, text='', bg='#283747', fg='white', anchor='w', justify='left', wraplength=400)
+        self.ner_result.pack(fill='x', padx=60, pady=(10, 0), ipady=4, anchor='w')
+        self.ner_result.configure(font=('verdana', 10))
+        
+        
+        # Go Back Button
+        goback_btn = Button(self.root, text='Go Back',bg='#e8f0fe', fg='black', bd=0, highlightthickness=1, highlightbackground='#ced4da', font=('verdana', 10, 'bold'), command=self.home_gui)
+        goback_btn.pack(pady=(10, 10))
+
+    # NER API
+    def do_ner(self):
+        text = self.ner_input.get()
+        result = self.apio.entity_extraction(text)
+
+        entities = result.get('entities', [])
+        if entities:
+            entity_list = "\n".join([f"{entity['label']} ➜ {entity['text']}" for entity in entities])
+        else:
+            entity_list = "No entities found."
+        
+        self.ner_result['text'] = entity_list
+
+
 ############################################################################################
 
 
+    # Emotion Prediction GUI
+    def emotion_gui(self):
+        self.clear()
+        
+        
+        # Heading
+        heading = Label(self.root, text='NLP App', bg='#283747', fg='white')
+        heading.pack(pady=(30, 30))
+        heading.configure( font=('verdana', 24, 'bold'))
+        
+        
+        # Emotion Prediction
+        heading = Label(self.root, text='Emotion Prediction', bg='#283747', fg='white')
+        heading.pack(pady=(10, 20))
+        heading.configure( font=('verdana', 20, ))
+
+
+        # Emotion Text Label
+        label1 = Label(self.root, text='Enter The Text', bg='#e8f0fe', fg='black', bd=0, highlightthickness=1, highlightbackground='#ced4da', font=('verdana', 10, 'bold'), anchor='w')
+        label1.pack(fill='x', padx=60, pady=(10, 0),ipady=4, anchor='w')
+
+
+        # Emotion Text Input
+        self.emotion_input = Entry(self.root, width=40, bg='#e8f0fe', fg='black', bd=0, highlightthickness=1, highlightbackground='#ced4da')
+        self.emotion_input.pack(pady=(20, 10), ipady=4, padx=60, anchor='w', fill='x')
+        
+        
+        # Emotion Button
+        emotion_btn = Button(self.root, text='Predict Emotion',bg='#e8f0fe', fg='black', bd=0, highlightthickness=1, highlightbackground='#ced4da', font=('verdana', 10, 'bold'), command=self.do_emotion)
+        emotion_btn.pack(pady=(10, 10))
+        
+        
+        # Result Text Label
+        self.emotion_result = Label(self.root, text='', bg='#283747', fg='white', anchor='w', justify='left', wraplength=400)
+        self.emotion_result.pack(fill='x', padx=60, pady=(10, 0), ipady=4, anchor='w')
+        self.emotion_result.configure(font=('verdana', 10))
+        
+        
+        # Go Back Button
+        goback_btn = Button(self.root, text='Go Back',bg='#e8f0fe', fg='black', bd=0, highlightthickness=1, highlightbackground='#ced4da', font=('verdana', 10, 'bold'), command=self.home_gui)
+        goback_btn.pack(pady=(10, 10))
+
+    # Emotion Predction API
+    def do_emotion(self):
+        text = self.emotion_input.get()
+        result = self.apio.emotion_prediction(text)
+
+        emotions = result['emotion_scores']
+        sorted_emotions = sorted(emotions.items(), key=lambda x: x[1], reverse=True)
+
+        top_3 = sorted_emotions[:3]
+
+        emotion_text = ""
+        for emotion, score in top_3:
+            emotion_text += f"{emotion}: {round(score * 100, 2)}%\n"
+
+        self.emotion_result['text'] = emotion_text
+
 
 ############################################################################################
 
-
-############################################################################################
-
-
-############################################################################################
 
 nlp = NLPApp()
